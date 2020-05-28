@@ -1,0 +1,21 @@
+#!/bin/bash
+#PBS -N maptest_B1_map
+#PBS -A UPRI0007
+#PBS -l walltime=12:00:00
+#PBS -q regular
+### PBS -o ./
+### PBS -e ./
+#PBS -k oe
+#PBS -m abe 
+###send mail when abort, begin, end
+#PBS -M jf38@princeton.edu 
+###email address
+#PBS -l select=1:ncpus=32:mpiprocs=32
+
+### Set TMPDIR as recommended
+## mkdir -p /glade/scratch/jfogart/temp
+## export TMPDIR /glade/scratch/jfogart/temp
+
+### Run the executable
+mpiexec_mpt dplace -s 1 ./non_periodic_lagrange
+
