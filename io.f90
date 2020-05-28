@@ -1216,99 +1216,99 @@ end subroutine MM_budget_slice
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !--This Subroutine Give the output for whole domain (MM)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!subroutine MM_XYZ_Out
-!use sim_param,only:path,u,v,w,dudz,dvdz,txx,txz,tyy,tyz,tzz,p,theta
-!use param,only:dz,p_count,c_count,jt
-!use sgsmodule,only:Cs_opt2,Cs_Ssim,Beta_avg,Betaclip_avg
-!implicit none
-!integer::i,j,k
-!real(kind=rprec),dimension(nx,ny,nz-1),save::ap,au,av,aw,p2,u2,v2,w2,auw,avw,acs,atheta
-!real(kind=rprec),dimension(nx,ny,nz-1),save::adudz,advdz,aCs_Ssim,abeta_sgs,abetaclip_sgs
-!real(kind=rprec),dimension(nx,ny,nz-1),save::atxx,atxz,atyy,atyz,atzz
-!real(kind=rprec),dimension(nx,ny,nz-1),save::u3,v3,w3
-!real(kind=rprec),dimension(:,:,:),allocatable::avg_out
-!real(kind=rprec)::fr,arg1, arg2
-!character (len=256) :: local_filename
-!
-!fr=(1._rprec/real(p_count,kind=rprec))*real(c_count,kind=rprec)
-!do k=1,Nz-1
-!do i=1,Nx
-!do j=1,Ny
-!      au(i,j,k)=au(i,j,k)+fr*u(i,j,k)
-!      av(i,j,k)=av(i,j,k)+fr*v(i,j,k)
-!      aw(i,j,k)=aw(i,j,k)+fr*w(i,j,k)
-!      atheta(i,j,k)=atheta(i,j,k)+fr*theta(i,j,k)
-!      ap(i,j,k)=ap(i,j,k)+fr*p(i,j,k)
-!      atxx(i,j,k)=atxx(i,j,k)+fr*txx(i,j,k)
-!      atxz(i,j,k)=atxz(i,j,k)+fr*txz(i,j,k)
-!      atyy(i,j,k)=atyy(i,j,k)+fr*tyy(i,j,k)
-!      atyz(i,j,k)=atyz(i,j,k)+fr*tyz(i,j,k)
-!      atzz(i,j,k)=atzz(i,j,k)+fr*tzz(i,j,k)
-!      adudz(i,j,k)=adudz(i,j,k)+fr*dudz(i,j,k)
-!      advdz(i,j,k)=advdz(i,j,k)+fr*dvdz(i,j,k)
-!      u2(i,j,k)=u2(i,j,k)+fr*u(i,j,k)*u(i,j,k)
-!      v2(i,j,k)=v2(i,j,k)+fr*v(i,j,k)*v(i,j,k)
-!      w2(i,j,k)=w2(i,j,k)+fr*w(i,j,k)*w(i,j,k)
-!      p2(i,j,k)=p2(i,j,k)+fr*p(i,j,k)*p(i,j,k)
-!      aCs(i,j,k)=sqrt(Cs_opt2(i,j,k))
-!      aCs_Ssim(i,j,k)=sqrt(Cs_Ssim(i,j,k))
-!      if((k .eq. 1) .AND. ((.not. USE_MPI) .or. (USE_MPI .and. coord == 0))) then
-!         arg1=0._rprec
-!         arg2=0._rprec
-!      else
-!         arg1=(u(i,j,k)+u(i,j,k-1))/2.
-!         arg2=(v(i,j,k)+v(i,j,k-1))/2.
-!      end if
-!      auw(i,j,k)=auw(i,j,k)+fr*w(i,j,k)*arg1
-!      avw(i,j,k)=avw(i,j,k)+fr*w(i,j,k)*arg2
-!      u3(i,j,k)=u3(i,j,k)+fr*u(i,j,k)*u(i,j,k)*u(i,j,k)
-!      v3(i,j,k)=v3(i,j,k)+fr*v(i,j,k)*v(i,j,k)*v(i,j,k)
-!      w3(i,j,k)=w3(i,j,k)+fr*w(i,j,k)*w(i,j,k)*w(i,j,k)
-!      abeta_sgs(i,j,k)=abeta_sgs(i,j,k)+fr*Beta_avg(k)
-!      abetaclip_sgs(i,j,k)=abetaclip_sgs(i,j,k)+fr*Betaclip_avg(k)
-!end do
-!end do
-!end do
-!
-!if (mod(jt,p_count)==0) then
-!        allocate(avg_out(1:nx,1:ny,1:(nz_tot-1)));
-!        call collocate_MPI_averages_SHH(au,avg_out,720,'u_all')
-!        call collocate_MPI_averages_SHH(av,avg_out,721,'v_all')
-!        call collocate_MPI_averages_SHH(aw,avg_out,722,'w_all')
-!        call collocate_MPI_averages_SHH(ap,avg_out,723,'p_all')
-!        call collocate_MPI_averages_SHH(u2,avg_out,724,'u2_all')
-!        call collocate_MPI_averages_SHH(v2,avg_out,725,'v2_all')
-!        call collocate_MPI_averages_SHH(w2,avg_out,726,'w2_all')
-!        call collocate_MPI_averages_SHH(p2,avg_out,732,'p2_all')
-!        call collocate_MPI_averages_SHH(atxx,avg_out,727,'txx_all')
-!        call collocate_MPI_averages_SHH(atxz,avg_out,728,'txz_all')
-!        call collocate_MPI_averages_SHH(atyy,avg_out,729,'tyy_all')
-!        call collocate_MPI_averages_SHH(atyz,avg_out,730,'tyz_all')
-!        call collocate_MPI_averages_SHH(atzz,avg_out,731,'tzz_all')
-!        call collocate_MPI_averages_SHH(auw,avg_out,733,'uw_all')
-!        call collocate_MPI_averages_SHH(avw,avg_out,734,'vw_all')
-!        call collocate_MPI_averages_SHH(aCs,avg_out,735,'Cs_all')
-!        call collocate_MPI_averages_SHH(adudz,avg_out,736,'dudz_all')
-!        call collocate_MPI_averages_SHH(advdz,avg_out,737,'dvdz_all')
-!        call collocate_MPI_averages_SHH(aCs_Ssim,avg_out,738,'Cs_Ssim_all')
-!        call collocate_MPI_averages_SHH(abeta_sgs,avg_out,739,'beta_sgs_all')
-!        call collocate_MPI_averages_SHH(abetaclip_sgs,avg_out,740,'betaclip_sgs_all');
-!        call collocate_MPI_averages_SHH(u3,avg_out,741,'u3_all')
-!        call collocate_MPI_averages_SHH(v3,avg_out,742,'v3_all')
-!        call collocate_MPI_averages_SHH(w3,avg_out,743,'w3_all');
-!        call collocate_MPI_averages_SHH(atheta,avg_out,744,'theta_all')
-!
-!        deallocate(avg_out)
-!
-!!VK Zero out the outputted averages !!
-!        au=0._rprec;av=0._rprec;aw=0._rprec;ap=0._rprec;u2=0._rprec;v2=0._rprec
-!        w2=0._rprec;atxx=0._rprec;atxz=0._rprec;atyy=0._rprec;atyz=0._rprec
-!        atzz=0._rprec;p2=0._rprec;auw=0._rprec;avw=0._rprec;aCs=0._rprec;atheta=0._rprec
-!        adudz=0._rprec;advdz=0._rprec;aCs_Ssim=0._rprec;abeta_sgs=0._rprec
-!        abetaclip_sgs=0._rprec;u3=0._rprec;v3=0._rprec;w3=0._rprec;
-!end if
-!5168     format(1400(E14.5))
-!end subroutine MM_XYZ_Out
+subroutine MM_XYZ_Out
+use sim_param,only:path,u,v,w,dudz,dvdz,txx,txz,tyy,tyz,tzz,p,theta
+use param,only:dz,p_count,c_count,jt
+use sgsmodule,only:Cs_opt2,Cs_Ssim,Beta_avg,Betaclip_avg
+implicit none
+integer::i,j,k
+real(kind=rprec),dimension(nx,ny,nz-1),save::ap,au,av,aw,p2,u2,v2,w2,auw,avw,acs,atheta
+real(kind=rprec),dimension(nx,ny,nz-1),save::adudz,advdz,aCs_Ssim,abeta_sgs,abetaclip_sgs
+real(kind=rprec),dimension(nx,ny,nz-1),save::atxx,atxz,atyy,atyz,atzz
+real(kind=rprec),dimension(nx,ny,nz-1),save::u3,v3,w3
+real(kind=rprec),dimension(:,:,:),allocatable::avg_out
+real(kind=rprec)::fr,arg1, arg2
+character (len=256) :: local_filename
+
+fr=(1._rprec/real(p_count,kind=rprec))*real(c_count,kind=rprec)
+do k=1,Nz-1
+do i=1,Nx
+do j=1,Ny
+      au(i,j,k)=au(i,j,k)+fr*u(i,j,k)
+      av(i,j,k)=av(i,j,k)+fr*v(i,j,k)
+      aw(i,j,k)=aw(i,j,k)+fr*w(i,j,k)
+      atheta(i,j,k)=atheta(i,j,k)+fr*theta(i,j,k)
+      ap(i,j,k)=ap(i,j,k)+fr*p(i,j,k)
+      atxx(i,j,k)=atxx(i,j,k)+fr*txx(i,j,k)
+      atxz(i,j,k)=atxz(i,j,k)+fr*txz(i,j,k)
+      atyy(i,j,k)=atyy(i,j,k)+fr*tyy(i,j,k)
+      atyz(i,j,k)=atyz(i,j,k)+fr*tyz(i,j,k)
+      atzz(i,j,k)=atzz(i,j,k)+fr*tzz(i,j,k)
+      adudz(i,j,k)=adudz(i,j,k)+fr*dudz(i,j,k)
+      advdz(i,j,k)=advdz(i,j,k)+fr*dvdz(i,j,k)
+      u2(i,j,k)=u2(i,j,k)+fr*u(i,j,k)*u(i,j,k)
+      v2(i,j,k)=v2(i,j,k)+fr*v(i,j,k)*v(i,j,k)
+      w2(i,j,k)=w2(i,j,k)+fr*w(i,j,k)*w(i,j,k)
+      p2(i,j,k)=p2(i,j,k)+fr*p(i,j,k)*p(i,j,k)
+      aCs(i,j,k)=sqrt(Cs_opt2(i,j,k))
+      aCs_Ssim(i,j,k)=sqrt(Cs_Ssim(i,j,k))
+      if((k .eq. 1) .AND. ((.not. USE_MPI) .or. (USE_MPI .and. coord == 0))) then
+         arg1=0._rprec
+         arg2=0._rprec
+      else
+         arg1=(u(i,j,k)+u(i,j,k-1))/2.
+         arg2=(v(i,j,k)+v(i,j,k-1))/2.
+      end if
+      auw(i,j,k)=auw(i,j,k)+fr*w(i,j,k)*arg1
+      avw(i,j,k)=avw(i,j,k)+fr*w(i,j,k)*arg2
+      u3(i,j,k)=u3(i,j,k)+fr*u(i,j,k)*u(i,j,k)*u(i,j,k)
+      v3(i,j,k)=v3(i,j,k)+fr*v(i,j,k)*v(i,j,k)*v(i,j,k)
+      w3(i,j,k)=w3(i,j,k)+fr*w(i,j,k)*w(i,j,k)*w(i,j,k)
+      abeta_sgs(i,j,k)=abeta_sgs(i,j,k)+fr*Beta_avg(k)
+      abetaclip_sgs(i,j,k)=abetaclip_sgs(i,j,k)+fr*Betaclip_avg(k)
+end do
+end do
+end do
+
+if (mod(jt,p_count)==0) then
+        allocate(avg_out(1:nx,1:ny,1:(nz_tot-1)));
+        call collocate_MPI_averages_SHH(au,avg_out,720,'u_all')
+        call collocate_MPI_averages_SHH(av,avg_out,721,'v_all')
+        call collocate_MPI_averages_SHH(aw,avg_out,722,'w_all')
+        call collocate_MPI_averages_SHH(ap,avg_out,723,'p_all')
+        call collocate_MPI_averages_SHH(u2,avg_out,724,'u2_all')
+        call collocate_MPI_averages_SHH(v2,avg_out,725,'v2_all')
+        call collocate_MPI_averages_SHH(w2,avg_out,726,'w2_all')
+        call collocate_MPI_averages_SHH(p2,avg_out,732,'p2_all')
+        call collocate_MPI_averages_SHH(atxx,avg_out,727,'txx_all')
+        call collocate_MPI_averages_SHH(atxz,avg_out,728,'txz_all')
+        call collocate_MPI_averages_SHH(atyy,avg_out,729,'tyy_all')
+        call collocate_MPI_averages_SHH(atyz,avg_out,730,'tyz_all')
+        call collocate_MPI_averages_SHH(atzz,avg_out,731,'tzz_all')
+        call collocate_MPI_averages_SHH(auw,avg_out,733,'uw_all')
+        call collocate_MPI_averages_SHH(avw,avg_out,734,'vw_all')
+        call collocate_MPI_averages_SHH(aCs,avg_out,735,'Cs_all')
+        call collocate_MPI_averages_SHH(adudz,avg_out,736,'dudz_all')
+        call collocate_MPI_averages_SHH(advdz,avg_out,737,'dvdz_all')
+        call collocate_MPI_averages_SHH(aCs_Ssim,avg_out,738,'Cs_Ssim_all')
+        call collocate_MPI_averages_SHH(abeta_sgs,avg_out,739,'beta_sgs_all')
+        call collocate_MPI_averages_SHH(abetaclip_sgs,avg_out,740,'betaclip_sgs_all');
+        call collocate_MPI_averages_SHH(u3,avg_out,741,'u3_all')
+        call collocate_MPI_averages_SHH(v3,avg_out,742,'v3_all')
+        call collocate_MPI_averages_SHH(w3,avg_out,743,'w3_all');
+        call collocate_MPI_averages_SHH(atheta,avg_out,744,'theta_all')
+
+        deallocate(avg_out)
+
+!VK Zero out the outputted averages !!
+        au=0._rprec;av=0._rprec;aw=0._rprec;ap=0._rprec;u2=0._rprec;v2=0._rprec
+        w2=0._rprec;atxx=0._rprec;atxz=0._rprec;atyy=0._rprec;atyz=0._rprec
+        atzz=0._rprec;p2=0._rprec;auw=0._rprec;avw=0._rprec;aCs=0._rprec;atheta=0._rprec
+        adudz=0._rprec;advdz=0._rprec;aCs_Ssim=0._rprec;abeta_sgs=0._rprec
+        abetaclip_sgs=0._rprec;u3=0._rprec;v3=0._rprec;w3=0._rprec;
+end if
+5168     format(1400(E14.5))
+end subroutine MM_XYZ_Out
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !--The following subroutine does the collocation of the MPI arrays for
 ! SHHOutput Subroutine
