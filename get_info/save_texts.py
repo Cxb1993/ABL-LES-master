@@ -5,51 +5,51 @@ as .txt files (arrays and vectors) to be post-processed how you wish
 
 # Import needed libraries
 import numpy as np
-import os
+import os, sys
+
+# import constants
+from constants import cnst
 
 ########## Preliminaries - fill in from PARAM.F90 ##########
 
-# project to analyze - corresponds to output folder in /glade/scratch/jfogart
-#project = str(input("\n  Project name: "))
-
 # IMPORTANT! Be sure to change these parameters from param.f90
-N_z = 192
-dt_dim = 0.03
-N_x = N_z
-z_i = 1000
-vonk = 0.4
-p_count = 1000
+project = cnst.project
+save_text_path = cnst.save_text_path
+scratch_path = cnst.scratch_path
+N_x = cnst.N_x
+N_z = cnst.N_z 
+z_i = cnst.z_i
+dt_dim = cnst.dt_dim
+total_time = cnst.total_time
+p_count = cnst.p_count
+u_g = cnst.u_g
+theta_s = cnst.theta_s
+t_slices = cnst.t_slices
+nt = cnst.nt
 
-# project name and file path for the solutions
-project = 'maptest_beaufo_2000_aug31_192cube'
-filepath = os.path.join(os.sep,'glade','scratch','jfogart','maptest',project)
+# start analysis
+while True:
+    print(f'\n  Conducting analysis for {project}')
+    print(f'  Loading from {scratch_path}')
+    print(f'  Saving information to {save_text_path}')
+    cont = input("\n  With this information, continue? y/n: ")
+    while cont.lower() not in ("y","n"):
+        cont = input("  Please choose, y or n: ")
+    if cont == "y":
+        break
+    if cont == "n":
+        sys.exit()
 
-# nt is taken from total_time.dat
-tt_file = open(os.path.join(filepath,'total_time.dat'), 'r')
-nt = int(float(tt_file.readlines()[0]))
-tt_file.close()
 
-
-t_slices = int(nt/p_count)
 print(f"\n  For {project}, nt = {nt} with {t_slices} total time slices")
 
 # First and last timesteps for the averaging and animation
 i0 = int(input("    First time slice you want to see: ")) # first timestep slice you want to see
 ie = int(input("    Last time slice you want to see:  ")) # last timestep slice you want to see
 
-# Non-dimensional parameters
-u_g = 2.0
-u_star = u_g
-rho = 1.0
-theta_s = 300
-
-# Large eddies
-total_time_dim = nt*dt_dim # in seconds
-large_eddy_lifetime = z_i/(u_star) # rough estimate, in seconds
-
-# also add a subfolder here for retirving data, if need be
-data_loc_string = os.path.join(filepath,'output')
-#data_loc_string = f"/glade/scratch/jfogart/striptest/{project}/output/"
+# the final string that this codes goes to get data
+# make sure this is right:
+data_loc_string = os.path.join(scratch_path,'output')
 
 ############### Retriving data ##################
 
@@ -96,13 +96,13 @@ for var in tot_list:
 
     # Save the time-averaged 2d view of the data from i0 to ie
     time_avg = np.mean(mat_3d[i0:ie], axis=0)
-    np.savetxt(f"LES-results/{project}/txts/{project}_{var}_nd_yt_{i0}_{ie}_tsteps.txt",
+    np.savetxt(os.path.join(save_text_path,'txts',f'{project}_{var}_nd_yt_{i0}_{ie}_tsteps.txt'),
                time_avg,fmt='%.10f',delimiter=' ')
     print(f"\n  2D average saved for {var}")
 
     # Save the time and x averaged vector
     time_x_avg = np.mean(time_avg,axis=1)
-    np.savetxt(f"LES-results/{project}/txts/{project}_{var}_nd_xyt_{i0}_{ie}_tsteps.txt",
+    np.savetxt(os.path.join(save_text_path,'txts',f'{project}_{var}_nd_yt_{i0}_{ie}_tsteps.txt'),
                time_x_avg,fmt='%.10f',delimiter=' ')
     print(f"  1D average saved for {var}")
 

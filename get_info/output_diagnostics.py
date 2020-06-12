@@ -5,9 +5,8 @@ to determine whether or not to keep going
 
 # import libraries
 import numpy as np
-import os
+import os, sys
 import pandas as pd
-import sys
 
 # import constants
 from constants import cnst
@@ -42,10 +41,10 @@ while True:
 nt = int(np.loadtxt(os.path.join(scratch_path,'total_time.dat')))
 print(f'\n  For this project, nt = {nt}')
 
-#### FIRST: check for NaN values using u,v,w, and theta ####
+#### FIRST: check for NaN values using u,v,w, and whatever else ##
 
 # check certain variables
-var_to_check = ['u', 'v', 'w', 'theta']
+var_to_check = ['u', 'v', 'w']
 
 for v in var_to_check:
 

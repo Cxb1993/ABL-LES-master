@@ -19,9 +19,9 @@ class cnst(object):
     root_home = os.path.join(os.sep,'glade','u','home','jfogart')
     
     # project-specific path
-    project = 'beaufo_2000_aug31'
+    project = 'maptest_beaufo_2000_aug31'
     scratch_path = os.path.join(root_scratch,'maptest',project)
-    save_text_path = os.path.join(root_home,'LES-results','maptest_beaufo_2000_aug31')
+    save_text_path = os.path.join(root_home,'LES-results',project)
     od_path = os.path.join(root_home,'get_info','timing_output_info.csv')
     
     # spatial mesh info
@@ -43,8 +43,9 @@ class cnst(object):
     # temporal info
     dt_dim = 0.03
     nt = 1000000
-    #int(np.loadtxt(os.path.join(scratch_path,'total_time.dat')))
+    #nt = int(np.loadtxt(os.path.join(scratch_path,'total_time.dat')))
     total_time = nt*dt_dim
+    t_slices = int(nt/p_count)
     
     # output mesh info
     c_count = 100
