@@ -28,9 +28,10 @@ class cnst(object):
     N_x = N_z
     z_i = 1000.0
 
-
-    # temporal mesh info
+    # temporal info
     dt_dim = 0.03
+    nt = 1000000
+    total_time = nt*dt_dim
     
     # output mesh info
     c_count = 100
@@ -43,4 +44,3 @@ class cnst(object):
     rho = 1.0
     theta_s = 300
 
-total_time = nt*dt_dim
